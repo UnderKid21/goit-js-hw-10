@@ -7,46 +7,32 @@ const form = document.querySelector('.form');
 
 form.addEventListener('submit', event => {
   event.preventDefault();
-  const delay = form.delay.value;
-  const state = form.state.value;
+  const delay = Number(event.currentTarget.elements.delay.value);
+  const state = event.currentTarget.elements.state.value;
 
-  makePromise({ value: delay, delay: delay, state: state })
-    .then(value =>
-      iziToast.show({
-        class: 'access-svg',
+  makePromise(state, delay)
+    .then(res =>
+      iziToast.success({
         position: 'topRight',
-        icon: 'access-svg',
-        message: `Fulfilled promise in ${delay} ms!`,
-        messageColor: '#fff',
-        messageSize: '16px',
-        backgroundColor: '#59A10D',
-        close: false,
-        closeOnClick: true,
+        message: `✅ Fulfilled promise in ${res.delay}ms`
       })
     )
     .catch(error =>
-      iziToast.show({
-        class: 'error-svg',
+      iziToast.error({
         position: 'topRight',
-        icon: 'error-svg',
-        message: `Rejected promise in ${delay} ms!`,
-        messageColor: '#fff',
-        messageSize: '16px',
-        backgroundColor: '#EF4040',
-        close: false,
-        closeOnClick: true,
+        message: `❌ Rejected promise in ${error.delay}ms`,
       })
     );
-  form.reset();
+    event.currentTarget.reset();
 });
 
-const makePromise = ({ value, delay, state }) => {
+const makePromise = (state, delay) => {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
       if (state === 'fulfilled') {
-        resolve(value);
+        resolve({delay});
       } else {
-        reject(value);
+        reject({delay});
       }
     }, delay);
   });
